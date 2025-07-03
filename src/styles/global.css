@@ -1,0 +1,36 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative&family=Merriweather&display=swap');
+
+:root {
+  --font-body: 'Merriweather', serif;
+  --font-heading: 'Cinzel Decorative', serif;
+}
+
+/* Dark mode colors. */
+:root {
+	--sl-color-accent-low: #082540;
+	--sl-color-accent: #006cba;
+	--sl-color-accent-high: #abccef;
+	--sl-color-white: #ffffff;
+	--sl-color-gray-1: #ededf1;
+	--sl-color-gray-2: #c1c1c6;
+	--sl-color-gray-3: #8a8b93;
+	--sl-color-gray-4: #57575f;
+	--sl-color-gray-5: #37373f;
+	--sl-color-gray-6: #26262d;
+	--sl-color-black: #18181b;
+}
+/* Light mode colors. */
+:root[data-theme='light'] {
+	--sl-color-accent-low: #c1daf5;
+	--sl-color-accent: #006ebe;
+	--sl-color-accent-high: #00335e;
+	--sl-color-white: #18181b;
+	--sl-color-gray-1: #26262d;
+	--sl-color-gray-2: #37373f;
+	--sl-color-gray-3: #57575f;
+	--sl-color-gray-4: #8a8b93;
+	--sl-color-gray-5: #c1c1c6;
+	--sl-color-gray-6: #ededf1;
+	--sl-color-gray-7: #f6f6f8;
+	--sl-color-black: #ffffff;
+}

@@ -3,22 +3,33 @@ import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 import starlightThemeRapide from 'starlight-theme-rapide'
 import starlightBlogPlugin from 'starlight-blog';
+import tailwindcss from '@tailwindcss/vite';
 
 // https://astro.build/config
 export default defineConfig({
-	integrations: [
-		starlight({
-			plugins: [
-				starlightThemeRapide(),
-				starlightBlogPlugin()
+	site: 'https://etocy.info',
+  integrations: [
+      starlight({
+          social: [
+            { icon: 'telegram', label: 'telegram', href: 'https://codeberg.org/knut' },
+          ],
+          plugins: [
+              starlightThemeRapide(),
+              starlightBlogPlugin()
 
-			],
-			title: 'K20',
-			description: 'Сайт семьи етосу',
+          ],
+          title: 'K20',
+          description: 'Сайт семьи етосу',
+          customCss: [
+              '/src/styles/global.css'
+          ],
+          logo: {
+              src: '/src/assets/logo.svg',
+          },
+      })
+	],
 
-			logo: {
-				src: '/src/assets/logo.svg',
-			},
-		})
-	]
+  vite: {
+    plugins: [tailwindcss()]
+  }
 })

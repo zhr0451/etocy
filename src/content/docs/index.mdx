@@ -1,12 +1,21 @@
 ---
-title: Добро пожаловать в k20
-hero:
-  title: k20
-  tagline: Все о играх етосу.
+title: Добро пожаловать на сайт К20!
+description: Домик компаний етосу.
 template: splash
-head:
-  # Используем свой тег <title>
-  - tag: title
-    content: Пользовательский заголовок
+hero:
+  tagline: Ниже можно перейти к интересующей тебя компании!
+  image:
+    file: /src/assets/logo.svg
 ---
+## О клубе
 
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+<CardGrid>
+  <Card title="Зацените это" icon="open-book">
+    Интересный контент, который вы хотите выделить.
+  </Card>
+  <Card title="Другая фича" icon="information">
+    Дополнительная информация, которой вы хотите поделиться.
+  </Card>
+</CardGrid>
