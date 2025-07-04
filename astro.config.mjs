@@ -11,7 +11,10 @@ export default defineConfig({
   integrations: [
       starlight({
         sidebar: [
-          { label: 'Dungeons & Dragons', link: '/' },
+          { 
+            label: 'Dungeons & Dragons', 
+            autogenerate: {directory: 'Dungeons & Dragons'} 
+          },
           { label: 'Другие системы', link: '/'}
         ],
           social: [
