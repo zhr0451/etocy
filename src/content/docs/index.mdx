@@ -1,21 +1,41 @@
 ---
-title: Добро пожаловать на сайт К20!
-description: Домик компаний етосу.
+title: "Добро пожаловать в клуб «к20»"
+description: "Настольные ролевые игры. Фантазия. Кубики. Люди."
 template: splash
 hero:
-  tagline: Ниже можно перейти к интересующей тебя компании!
   image:
     file: /src/assets/logo.svg
+permalink: /
 ---
-## О клубе
 
-import { Card, CardGrid } from '@astrojs/starlight/components';
+> 🧙‍♀️ **«к20»** — это клуб по настольным ролевым играм.
 
-<CardGrid>
-  <Card title="Зацените это" icon="open-book">
-    Интересный контент, который вы хотите выделить.
-  </Card>
-  <Card title="Другая фича" icon="information">
-    Дополнительная информация, которой вы хотите поделиться.
-  </Card>
-</CardGrid>
+---
+
+# Наши компании
+
+import { LinkCard } from '@astrojs/starlight/components';
+
+<LinkCard
+  title="Надежда Фандалина"
+  href="/src/content/docs/blog/Анонсы"
+  description="Что скрывает Побережье Мечей?"
+/>
+
+<LinkCard
+  title="Тень за Вратами"
+  href="/src/content/docs/blog/Анонсы"
+  description="Смогут ли авантюристы найти убийцу?"
+/>
+
+<LinkCard
+  title="Ваншот (не Ваншот)"
+  href="/src/content/docs/blog/Анонсы"
+  description="Мастер, ну заканчивай уже, реально."
+/>
+
+<LinkCard
+  title="Анонсы"
+  href="/blog/anons-test"
+  description="Следите за анонсами игр в блоге!"
+/>

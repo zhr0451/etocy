@@ -10,12 +10,16 @@ export default defineConfig({
 	site: 'https://etocy.info',
   integrations: [
       starlight({
+        sidebar: [
+          { label: 'Dungeons & Dragons', link: '/' },
+          { label: 'Другие системы', link: '/'}
+        ],
           social: [
             { icon: 'telegram', label: 'telegram', href: 'https://codeberg.org/knut' },
           ],
           plugins: [
               starlightThemeRapide(),
-              starlightBlogPlugin()
+              starlightBlogPlugin(),
 
           ],
           title: 'K20',
