@@ -21,6 +21,7 @@
 --color-button-text   /* текст CTA */
 --color-shadow        /* тень карточек */
 --color-tag-bg        /* фон для бейджей */
+--page-gradient       /* линейный градиент подложки */
 --bg-gradient         /* декоративный градиент фона */
 ```
 

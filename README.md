@@ -116,3 +116,4 @@
 - [Документация Astro](https://docs.astro.build)
 - [Content Collections](https://docs.astro.build/en/guides/content-collections/)
 - [MDX в Astro](https://docs.astro.build/en/guides/integrations-guide/mdx/) — если понадобится смешивать Markdown и JSX-компоненты.
+- [Repository Guidelines](AGENTS.md) — краткое руководство для контрибьюторов (EN).
