@@ -1,0 +1,156 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import type { CollectionEntry } from 'astro:content';
+import { getCollection } from 'astro:content';
+
+type SessionEntry = CollectionEntry<'sessions'>;
+
+export async function getStaticPaths() {
+	const entries = await getCollection('sessions', ({ data }) => data.published);
+	return entries.map((entry) => ({
+		params: { slug: entry.slug },
+		props: { entry }
+	}));
+}
+
+const { entry } = Astro.props as { entry: SessionEntry };
+const { Content } = await entry.render();
+
+const pageTitle = `Сессия #${entry.data.session}: ${entry.data.title} | «Последствия Чумы Заклинаний»`;
+const pageDescription =
+	entry.data.summary ??
+	`Подробности сессии #${entry.data.session} «${entry.data.title}» кампании «Последствия Чумы Заклинаний» клуба «К20».`;
+
+const formatDate = (value: Date) =>
+	new Intl.DateTimeFormat('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }).format(
+		value
+	);
+---
+
+<Layout title={pageTitle} description={pageDescription}>
+	<article class="session-entry">
+		<header class="session-entry__header">
+			<p class="session-entry__number">Сессия #{entry.data.session}</p>
+			<h1>{entry.data.title}</h1>
+			<ul class="session-entry__meta">
+				<li>{formatDate(entry.data.date)}</li>
+				{entry.data.location && <li>{entry.data.location}</li>}
+				{entry.data.players.length > 0 && (
+					<li>Участвовали: {entry.data.players.join(', ')}</li>
+				)}
+			</ul>
+			{entry.data.tags.length > 0 && (
+				<ul class="session-entry__tags">
+					{entry.data.tags.map((tag) => (
+						<li>{tag}</li>
+					))}
+				</ul>
+			)}
+		</header>
+
+		<section class="session-entry__content">
+			{entry.data.summary && <p class="session-entry__summary">{entry.data.summary}</p>}
+			<Content />
+		</section>
+
+		<a class="session-entry__back" href="/sessions/">← Вернуться к архиву</a>
+	</article>
+</Layout>
+
+<style>
+	.session-entry {
+		display: grid;
+		gap: 2rem;
+	}
+
+	.session-entry__header {
+		display: grid;
+		gap: 0.75rem;
+		padding: 2.1rem;
+		border-radius: 22px;
+		background:
+			linear-gradient(135deg, rgba(189, 147, 249, 0.22), transparent 55%),
+			var(--color-surface-strong);
+		border: 1px solid var(--color-border-strong);
+		box-shadow: 0 24px 46px rgba(0, 0, 0, 0.32);
+		position: relative;
+	}
+
+	.session-entry__number {
+		margin: 0;
+		text-transform: uppercase;
+		font-size: 0.75rem;
+		letter-spacing: 0.1em;
+		color: var(--color-link-active);
+	}
+
+	.session-entry__meta {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.7rem;
+		font-size: 0.95rem;
+		color: var(--color-muted);
+	}
+
+	.session-entry__tags {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.4rem;
+	}
+
+	.session-entry__tags li {
+		padding: 0.25rem 0.65rem;
+		border-radius: 999px;
+		background: var(--color-tag-bg);
+		color: var(--color-link-active);
+		font-size: 0.75rem;
+	}
+
+	.session-entry__summary {
+		font-weight: 500;
+		margin-bottom: 1rem;
+		color: var(--color-muted);
+	}
+
+	.session-entry__content :global(p) {
+		margin-bottom: 1rem;
+		color: var(--color-muted);
+	}
+
+	.session-entry__content :global(h2),
+	.session-entry__content :global(h3) {
+		margin-top: 1.5rem;
+		color: var(--color-link-active);
+	}
+
+	.session-entry__content :global(ul),
+	.session-entry__content :global(ol) {
+		padding-left: 1.2rem;
+	}
+
+	.session-entry__back {
+		font-weight: 600;
+		color: var(--color-link-active);
+	}
+
+	@media (max-width: 640px) {
+		.session-entry__header {
+			padding: 1.5rem;
+		}
+
+		.session-entry__meta {
+			flex-direction: column;
+			gap: 0.5rem;
+		}
+
+		.session-entry__content :global(p) {
+			font-size: 0.95rem;
+		}
+	}
+</style>

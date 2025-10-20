@@ -1,0 +1,137 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+
+const diaryEntries = await getCollection('diary', (entry) => entry.slug.startsWith('lasm/'));
+const sortedEntries = diaryEntries.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+
+const formatDate = (value: Date) =>
+	new Intl.DateTimeFormat('ru-RU', {
+		day: 'numeric',
+		month: 'long',
+		year: 'numeric'
+	}).format(value);
+---
+
+<Layout
+	title="Дневник Ласм — Последствия Чумы Заклинаний"
+	description="Записи барда Ласм о кампании «Последствия Чумы Заклинаний» и деятельности клуба «К20»."
+>
+	<header class="page-heading">
+		<h1>Дневник Ласм</h1>
+		<p>
+			Ласм ведёт заметки после каждой важной встречи или экспедиции. Эти записи помогают клубу
+			«К20» отслеживать эмоциональный фон команды и документировать культурные находки.
+		</p>
+	</header>
+
+	{sortedEntries.length > 0 ? (
+		<ul class="entry-list">
+			{sortedEntries.map((entry) => (
+				<li class="entry-card">
+					<h2>
+						<a href={`/diary/${entry.slug}/`}>{entry.data.title}</a>
+					</h2>
+					<ul class="entry-meta">
+						<li>{formatDate(entry.data.date)}</li>
+						{entry.data.location && <li>{entry.data.location}</li>}
+						{entry.data.mood && <li>Настроение: {entry.data.mood}</li>}
+					</ul>
+					{entry.data.summary && <p class="entry-summary">{entry.data.summary}</p>}
+					{entry.data.tags.length > 0 && (
+						<ul class="entry-tags">
+							{entry.data.tags.map((tag) => (
+								<li>{tag}</li>
+							))}
+						</ul>
+					)}
+					<a class="entry-link" href={`/diary/${entry.slug}/`}>Читать запись</a>
+				</li>
+			))}
+		</ul>
+	) : (
+		<p>Пока нет записей. Добавьте Markdown-файлы в <code>src/content/diary/lasm</code>.</p>
+	)}
+</Layout>
+
+<style>
+	.page-heading {
+		display: grid;
+		gap: 0.75rem;
+		margin-bottom: 1.5rem;
+	}
+
+	.entry-list {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+		display: grid;
+		gap: 1.25rem;
+	}
+
+	.entry-card {
+		padding: 1.85rem;
+		border-radius: 20px;
+		border: 1px solid var(--color-border);
+		background:
+			linear-gradient(135deg, rgba(189, 147, 249, 0.16), transparent 60%),
+			var(--color-surface);
+		box-shadow: 0 20px 38px rgba(0, 0, 0, 0.3);
+		display: grid;
+		gap: 0.85rem;
+		position: relative;
+	}
+
+	.entry-meta {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.75rem;
+		font-size: 0.9rem;
+		color: var(--color-muted);
+	}
+
+	.entry-summary {
+		margin: 0;
+		color: var(--color-muted);
+	}
+
+	.entry-tags {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.4rem;
+	}
+
+	.entry-tags li {
+		padding: 0.25rem 0.6rem;
+		border-radius: 999px;
+		background: var(--color-tag-bg);
+		color: var(--color-link-active);
+		font-size: 0.75rem;
+	}
+
+	.entry-link {
+		font-weight: 600;
+		color: var(--color-link-active);
+	}
+
+	@media (max-width: 640px) {
+		.entry-card {
+			padding: 1.4rem;
+		}
+
+		.entry-meta {
+			flex-direction: column;
+			gap: 0.45rem;
+		}
+
+		.entry-link {
+			margin-top: 0.25rem;
+		}
+	}
+</style>

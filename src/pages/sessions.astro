@@ -1,0 +1,122 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+
+const sessions = await getCollection('sessions', ({ data }) => data.published);
+const sortedSessions = sessions.sort((a, b) => b.data.session - a.data.session);
+
+const formatDate = (value: Date) =>
+	new Intl.DateTimeFormat('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }).format(
+		value
+	);
+---
+
+<Layout
+	title="Архив сессий «Последствия Чумы Заклинаний» — etocy.info"
+	description="Записи сессий кампании «Последствия Чумы Заклинаний» клуба «К20» с датами, участниками и кратким содержанием."
+>
+	<header class="page-heading">
+		<h1>Архив сессий</h1>
+		<p>
+			Каждая запись ведется через Markdown-файл в <code>src/content/sessions</code>. Указывайте
+			дату, номер и краткую сводку, чтобы легче ориентироваться при подготовке к следующей игре.
+		</p>
+	</header>
+
+	{sortedSessions.length > 0 ? (
+		<ol class="session-list">
+			{sortedSessions.map((session) => (
+				<li class="session-card">
+					<h2>
+						<a href={`/sessions/${session.slug}/`}>
+							Сессия #{session.data.session}: {session.data.title}
+						</a>
+					</h2>
+					<ul class="session-meta">
+						<li>{formatDate(session.data.date)}</li>
+						{session.data.location && <li>{session.data.location}</li>}
+					</ul>
+					{session.data.summary && <p>{session.data.summary}</p>}
+					{session.data.players.length > 0 && (
+						<p class="session-players">
+							Участвовали: <span>{session.data.players.join(', ')}</span>
+						</p>
+					)}
+					<a class="session-link" href={`/sessions/${session.slug}/`}>Открыть запись</a>
+				</li>
+			))}
+		</ol>
+	) : (
+		<p>Здесь появятся ваши сессии, когда вы добавите первые заметки.</p>
+	)}
+</Layout>
+
+<style>
+	.page-heading {
+		display: grid;
+		gap: 0.75rem;
+		margin-bottom: 1.5rem;
+	}
+
+	.session-list {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+		display: grid;
+		gap: 1.25rem;
+	}
+
+	.session-card {
+		padding: 1.65rem;
+		border-radius: 20px;
+		background:
+			linear-gradient(135deg, rgba(189, 147, 249, 0.16), transparent 60%),
+			var(--color-surface);
+		border: 1px solid var(--color-border);
+		display: grid;
+		gap: 0.85rem;
+		box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+		position: relative;
+	}
+
+	.session-meta {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.75rem;
+		font-size: 0.9rem;
+		color: var(--color-muted);
+	}
+
+	.session-players {
+		margin: 0;
+		color: var(--color-muted);
+	}
+
+	.session-players span {
+		color: var(--color-link-active);
+	}
+
+	.session-link {
+		font-weight: 600;
+		align-self: flex-start;
+		color: var(--color-link-active);
+	}
+
+	@media (max-width: 640px) {
+		.session-card {
+			padding: 1.35rem;
+		}
+
+		.session-meta {
+			flex-direction: column;
+			gap: 0.4rem;
+		}
+
+		.session-link {
+			margin-top: 0.25rem;
+		}
+	}
+</style>

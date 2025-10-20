@@ -1,0 +1,257 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+
+const companyEntries = await getCollection('company');
+const companyHighlight = companyEntries.sort((a, b) => a.data.order - b.data.order)[0];
+const companyHighlightSummary =
+	companyHighlight?.body.split('\n\n')[0] ?? 'Добавьте описание компании в разделе контента.';
+
+const sessionEntries = await getCollection('sessions', ({ data }) => data.published);
+const latestSession = sessionEntries.sort((a, b) => b.data.session - a.data.session)[0];
+
+const players = await getCollection('players');
+const sortedPlayers = players.sort((a, b) => {
+	if (a.data.role !== b.data.role) {
+		return a.data.role === 'dm' ? -1 : 1;
+	}
+	return a.data.character.localeCompare(b.data.character, 'ru');
+});
+const featuredPlayers = sortedPlayers.slice(0, 3).map((entry) => ({
+	entry,
+	summary: entry.body?.trim().split('\n\n')[0] ?? ''
+}));
+
+const formatDate = (value: Date) =>
+	new Intl.DateTimeFormat('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }).format(value);
+---
+
+<Layout>
+	<section class="hero">
+		<div class="hero-intro">
+			<h1>«К20» представляет: Последствия Чумы Заклинаний</h1>
+			<p>
+				etocy.info — журнал клуба настольных ролевых игр «К20», где собраны материалы кампании
+				«Последствия Чумы Заклинаний»: персонажи, отчёты о сессиях и планы экспедиций.
+			</p>
+		</div>
+		{companyHighlight && (
+			<aside class="highlight">
+				<h2>{companyHighlight.data.title}</h2>
+				<p>{companyHighlightSummary}</p>
+				<a class="highlight__link" href="/company/">Открыть раздел</a>
+			</aside>
+		)}
+	</section>
+
+	<section class="sessions">
+		<header class="section-heading">
+			<h2>Последняя сессия</h2>
+			<a href="/sessions/">Архив сессий</a>
+		</header>
+		{latestSession ? (
+			<article class="session-card">
+				<h3>
+					Сессия #{latestSession.data.session}: {latestSession.data.title}
+				</h3>
+				<ul class="session-meta">
+					<li>{formatDate(latestSession.data.date)}</li>
+					{latestSession.data.location && <li>{latestSession.data.location}</li>}
+					{latestSession.data.players.length > 0 && (
+						<li>
+							Участвовали: {latestSession.data.players.join(', ')}
+						</li>
+					)}
+				</ul>
+				<p>{latestSession.data.summary ?? 'Добавьте краткий обзор в frontmatter.'}</p>
+				<a class="session-link" href={`/sessions/${latestSession.slug}/`}>Подробнее</a>
+			</article>
+		) : (
+			<p>У вас пока нет опубликованных сессий. Создайте запись в папке <code>src/content/sessions</code>.</p>
+			)}
+	</section>
+
+	<section class="players">
+		<header class="section-heading">
+			<h2>Игроки и ведущий</h2>
+			<a href="/players/">Смотреть всех</a>
+		</header>
+		<ul class="player-grid">
+			{featuredPlayers.map(({ entry, summary }) => (
+				<li class="player-card">
+					<p class="player-role">{entry.data.role === 'dm' ? 'Ведущий' : 'Игрок'}</p>
+					<h3>{entry.data.character}</h3>
+					<p class="player-meta">
+						{entry.data.name.trim() !== '—' && <span>{entry.data.name}</span>}
+						<span>{entry.data.class}</span>
+						<span>Уровень {entry.data.level}</span>
+					</p>
+					<p class="player-body">{summary}</p>
+					<a class="player-link" href={`/players/${entry.slug}/`}>Подробнее</a>
+				</li>
+			))}
+		</ul>
+	</section>
+</Layout>
+
+<style>
+	.hero {
+		display: grid;
+		gap: 1.5rem;
+		align-items: start;
+		color: var(--color-text);
+	}
+
+	.hero-intro {
+		display: grid;
+		gap: 1rem;
+		align-content: start;
+		max-width: 52ch;
+	}
+
+	.hero h1 {
+		font-size: 2.2rem;
+		margin: 0;
+		color: var(--color-heading);
+		text-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+	}
+
+	.hero p {
+		max-width: 52ch;
+		margin: 0;
+		color: var(--color-muted);
+	}
+
+	.highlight {
+		border-radius: 18px;
+		padding: 1.8rem;
+		background:
+			linear-gradient(135deg, rgba(189, 147, 249, 0.2), transparent 60%),
+			var(--color-surface-strong);
+		border: 1px solid var(--color-border-strong);
+		box-shadow: 0 18px 36px rgba(0, 0, 0, 0.32);
+		display: grid;
+		gap: 0.9rem;
+		align-content: start;
+		position: relative;
+	}
+
+	.highlight h2 {
+		margin-top: 0;
+		margin-bottom: 0.75rem;
+		color: var(--color-heading-soft);
+	}
+
+	.highlight__link {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.35rem;
+		margin-top: 1rem;
+		font-weight: 600;
+		color: var(--color-link-active);
+	}
+
+	.section-heading {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: 1rem;
+		margin-bottom: 1rem;
+	}
+
+	.section-heading h2 {
+		margin: 0;
+		font-size: 1.6rem;
+		color: var(--color-heading-soft);
+	}
+
+	.player-grid {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: grid;
+		gap: 1rem;
+		grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+	}
+
+		.player-card {
+			padding: 1.65rem;
+			border-radius: 18px;
+			border: 1px solid var(--color-border);
+			background:
+				linear-gradient(135deg, rgba(98, 114, 164, 0.16), transparent 60%),
+				var(--color-surface);
+			display: flex;
+			flex-direction: column;
+			gap: 0.75rem;
+			box-shadow: 0 18px 34px rgba(0, 0, 0, 0.28);
+		}
+
+		.player-role {
+			font-size: 0.8rem;
+			letter-spacing: 0.08em;
+			text-transform: uppercase;
+			color: var(--color-link-active);
+			margin: 0;
+		}
+
+		.player-meta {
+			display: flex;
+			flex-direction: column;
+			gap: 0.3rem;
+			font-size: 0.95rem;
+			color: var(--color-muted);
+			margin: 0;
+		}
+
+	.player-meta span {
+		display: inline-block;
+	}
+
+		.player-body {
+			margin: 0;
+			color: var(--color-muted);
+		}
+
+	.player-link {
+		margin-top: auto;
+		font-weight: 600;
+		color: var(--color-link-active);
+	}
+
+	.sessions .session-card {
+		padding: 1.65rem;
+		border-radius: 18px;
+		background:
+			linear-gradient(135deg, rgba(98, 114, 164, 0.14), transparent 60%),
+			var(--color-surface);
+		border: 1px solid var(--color-border);
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+		box-shadow: 0 18px 34px rgba(0, 0, 0, 0.28);
+	}
+
+		.session-meta {
+			list-style: none;
+			margin: 0;
+			padding: 0;
+			display: flex;
+			flex-wrap: wrap;
+			gap: 0.75rem;
+			font-size: 0.9rem;
+			color: var(--color-muted);
+		}
+
+	.session-link {
+		font-weight: 600;
+		align-self: flex-start;
+		color: var(--color-link-active);
+	}
+
+	@media (min-width: 720px) {
+		.hero {
+			grid-template-columns: 1fr 1fr;
+		}
+	}
+</style>

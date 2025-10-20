@@ -1,0 +1,582 @@
+---
+type Props = {
+	title?: string;
+	description?: string;
+};
+
+const {
+	title = 'etocy.info — Последствия Чумы Заклинаний',
+	description =
+		'etocy.info — официальный сайт клуба «К20» для кампании «Последствия Чумы Заклинаний»: хроники сессий, персонажи и материалы.'
+} = Astro.props as Props;
+
+const navLinks = [
+	{ href: '/', label: 'Главная' },
+	{ href: '/company/', label: 'О кампании' },
+	{ href: '/sessions/', label: 'Сессии' },
+	{ href: '/players/', label: 'Игроки' },
+	{ href: '/diary/lasm/', label: 'Дневник Ласм' }
+] as const;
+
+const currentPath = Astro.url.pathname;
+const isActive = (href: string) =>
+	href === '/' ? currentPath === '/' : currentPath.startsWith(href);
+
+const mobileMenuId = 'primary-navigation';
+---
+
+<!doctype html>
+<html lang="ru" data-theme="light">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="generator" content={Astro.generator} />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+			<link
+				href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Slab:wght@500&display=swap"
+				rel="stylesheet"
+			/>
+		<title>{title}</title>
+		<meta name="description" content={description} />
+		<script is:inline>
+			const storageKey = 'etocy-theme';
+			const root = document.documentElement;
+			const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+			const setTheme = (value) => {
+				const theme = value === 'dark' ? 'dark' : 'light';
+				root.dataset.theme = theme;
+				root.style.colorScheme = theme;
+			};
+			const saved = localStorage.getItem(storageKey);
+			if (saved === 'light' || saved === 'dark') {
+				setTheme(saved);
+			} else {
+				setTheme(prefersDark.matches ? 'dark' : 'light');
+			}
+			prefersDark.addEventListener('change', (event) => {
+				if (!localStorage.getItem(storageKey)) {
+					setTheme(event.matches ? 'dark' : 'light');
+				}
+			});
+			window.__etocySetTheme = (value) => {
+				setTheme(value);
+				localStorage.setItem(storageKey, value);
+			};
+		</script>
+	</head>
+		<body>
+			<a class="skip-link" href="#main">Перейти к содержимому</a>
+			<header class="site-header">
+				<div class="site-header__inner">
+					<a class="site-logo" href="/">etocy.info</a>
+					<div class="site-header__actions">
+						<div class="site-header__toggles">
+							<button
+								type="button"
+								class="nav-toggle"
+								data-nav-toggle
+								aria-controls={mobileMenuId}
+								aria-expanded="false"
+							>
+								<span class="nav-toggle__icon" aria-hidden="true"></span>
+								<span class="sr-only">Открыть меню</span>
+							</button>
+							<button
+								type="button"
+								class="theme-toggle"
+								data-theme-toggle
+								aria-label="Переключить тему"
+								aria-pressed="false"
+							>
+								<span aria-hidden="true" class="theme-toggle__icon">☀</span>
+								<span class="sr-only" data-theme-label>Светлая тема</span>
+							</button>
+						</div>
+						<nav aria-label="Основная навигация" class="site-header__nav">
+							<ul class="nav-list" id={mobileMenuId} data-nav-list data-open="true">
+								{navLinks.map((link) => (
+									<li>
+										<a class:list={['nav-link', { active: isActive(link.href) }]} href={link.href}>
+											{link.label}
+										</a>
+									</li>
+								))}
+							</ul>
+						</nav>
+					</div>
+				</div>
+			</header>
+		<main id="main" class="site-main">
+			<slot />
+		</main>
+		<footer class="site-footer">
+			<p>© {new Date().getFullYear()} etocy.info. Все права защищены.</p>
+		</footer>
+		<script is:inline>
+			document.addEventListener('DOMContentLoaded', () => {
+				const storageKey = 'etocy-theme';
+				const root = document.documentElement;
+				const themeToggle = document.querySelector('[data-theme-toggle]');
+				const navToggle = document.querySelector('[data-nav-toggle]');
+				const navList = document.querySelector('[data-nav-list]');
+
+				if (themeToggle) {
+					const label = themeToggle.querySelector('[data-theme-label]');
+					const icon = themeToggle.querySelector('.theme-toggle__icon');
+					const syncTheme = () => {
+						const current = root.dataset.theme === 'dark' ? 'dark' : 'light';
+						const isDark = current === 'dark';
+						themeToggle.setAttribute('aria-pressed', isDark ? 'true' : 'false');
+						themeToggle.setAttribute(
+							'aria-label',
+							isDark ? 'Переключить на светлую тему' : 'Переключить на тёмную тему'
+						);
+						if (label) {
+							label.textContent = isDark ? 'Тёмная тема' : 'Светлая тема';
+						}
+					if (icon) {
+						icon.textContent = isDark ? '◐' : '☀';
+					}
+					};
+					themeToggle.addEventListener('click', () => {
+						const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+						if (window.__etocySetTheme) {
+							window.__etocySetTheme(next);
+						} else {
+							const theme = next === 'dark' ? 'dark' : 'light';
+							root.dataset.theme = theme;
+							root.style.colorScheme = theme;
+							localStorage.setItem(storageKey, theme);
+						}
+						syncTheme();
+					});
+					syncTheme();
+				}
+
+				if (navToggle && navList) {
+					const openMenu = () => {
+						navToggle.setAttribute('aria-expanded', 'true');
+						navToggle.setAttribute('aria-label', 'Закрыть меню');
+						navToggle.classList.add('nav-toggle--open');
+						navList.setAttribute('data-open', 'true');
+					};
+					const closeMenu = () => {
+						navToggle.setAttribute('aria-expanded', 'false');
+						navToggle.setAttribute('aria-label', 'Открыть меню');
+						navToggle.classList.remove('nav-toggle--open');
+						navList.setAttribute('data-open', 'false');
+					};
+					navToggle.addEventListener('click', () => {
+						const isOpen = navToggle.getAttribute('aria-expanded') === 'true';
+						if (isOpen) {
+							closeMenu();
+						} else {
+							openMenu();
+						}
+					});
+					navList.querySelectorAll('a').forEach((link) => {
+						link.addEventListener('click', () => {
+							if (window.innerWidth <= 720) {
+								closeMenu();
+							}
+						});
+					});
+					const syncMenuState = () => {
+						if (window.innerWidth > 720) {
+							navList.setAttribute('data-open', 'true');
+							navToggle.classList.remove('nav-toggle--open');
+							navToggle.setAttribute('aria-expanded', 'false');
+							navToggle.setAttribute('aria-label', 'Открыть меню');
+						} else if (navToggle.getAttribute('aria-expanded') !== 'true') {
+							navList.setAttribute('data-open', 'false');
+						}
+					};
+					window.addEventListener('resize', syncMenuState);
+					syncMenuState();
+				}
+			});
+		</script>
+	</body>
+</html>
+
+<style>
+	:root {
+		color-scheme: light;
+		--font-family-base: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+		--font-family-headings: 'Roboto Slab', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+		--color-heading: #ff79c6;
+		--color-heading-soft: rgba(255, 121, 198, 0.82);
+		--color-frame: #bd93f9;
+		--color-frame-dark: #6272a4;
+		--color-bg: linear-gradient(135deg, rgba(40, 42, 54, 0.95), rgba(68, 71, 90, 0.85) 60%), #282a36;
+		--color-surface: rgba(33, 34, 45, 0.92);
+		--color-surface-strong: rgba(40, 42, 54, 0.96);
+		--color-border: rgba(189, 147, 249, 0.25);
+		--color-border-strong: rgba(189, 147, 249, 0.45);
+		--color-text: #f8f8f2;
+		--color-muted: rgba(248, 248, 242, 0.75);
+		--color-link: #8be9fd;
+		--color-link-active: #ff79c6;
+		--color-nav-hover: rgba(98, 114, 164, 0.25);
+		--color-button-bg: linear-gradient(135deg, #50fa7b 0%, #8be9fd 100%);
+		--color-button-text: #1e1f29;
+		--color-shadow: 0 24px 44px rgba(10, 10, 14, 0.55);
+		--bg-gradient: radial-gradient(circle at 18% 18%, rgba(189, 147, 249, 0.2), transparent 45%), radial-gradient(circle at 82% 22%, rgba(80, 250, 123, 0.15), transparent 55%), #282a36;
+		--color-tag-bg: rgba(189, 147, 249, 0.22);
+	}
+
+	:root[data-theme='light'] {
+		color-scheme: light;
+		--color-heading: #bd93f9;
+		--color-heading-soft: rgba(189, 147, 249, 0.85);
+		--color-frame: #6272a4;
+		--color-frame-dark: #44475a;
+		--color-bg: linear-gradient(135deg, rgba(248, 248, 242, 0.95), rgba(230, 230, 235, 0.9) 60%), #f8f8f2;
+		--color-surface: rgba(255, 255, 255, 0.94);
+		--color-surface-strong: rgba(244, 244, 250, 0.96);
+		--color-border: rgba(98, 114, 164, 0.22);
+		--color-border-strong: rgba(98, 114, 164, 0.38);
+		--color-text: #282a36;
+		--color-muted: rgba(68, 71, 90, 0.8);
+		--color-link: #6272a4;
+		--color-link-active: #ff79c6;
+		--color-nav-hover: rgba(98, 114, 164, 0.16);
+		--color-button-bg: linear-gradient(135deg, #6272a4 0%, #bd93f9 100%);
+		--color-button-text: #f8f8f2;
+		--color-shadow: 0 20px 40px rgba(98, 114, 164, 0.28);
+		--bg-gradient: radial-gradient(circle at 22% 20%, rgba(189, 147, 249, 0.12), transparent 45%), radial-gradient(circle at 80% 25%, rgba(98, 114, 164, 0.1), transparent 55%), #f8f8f2;
+		--color-tag-bg: rgba(98, 114, 164, 0.18);
+	}
+
+	* {
+		box-sizing: border-box;
+	}
+
+	body {
+		margin: 0;
+		min-height: 100vh;
+		background: var(--bg-gradient), var(--color-bg);
+		color: var(--color-text);
+		font-family: var(--font-family-base);
+		line-height: 1.6;
+		display: flex;
+		flex-direction: column;
+		transition: background 0.4s ease, color 0.4s ease;
+	}
+
+	h1,
+	h2,
+	h3,
+	h4,
+	h5,
+	h6 {
+		font-family: var(--font-family-headings);
+		font-weight: 500;
+		line-height: 1.25;
+		letter-spacing: 0.01em;
+		color: var(--color-heading);
+	}
+
+	a {
+		color: var(--color-link);
+		text-decoration: none;
+		transition: color 0.2s ease;
+		text-decoration-color: rgba(255, 210, 127, 0.45);
+	}
+
+	a:hover,
+	a:focus-visible {
+		color: var(--color-link-active);
+		text-decoration: underline;
+	}
+
+	.skip-link {
+		position: absolute;
+		left: -999px;
+		top: -999px;
+		padding: 0.5rem 1rem;
+		background: var(--color-link);
+		color: #fff;
+		border-radius: 6px;
+	}
+
+	.skip-link:focus {
+		left: 1rem;
+		top: 1rem;
+		z-index: 1000;
+	}
+
+	.site-header {
+		backdrop-filter: blur(14px);
+		background:
+			linear-gradient(135deg, rgba(189, 147, 249, 0.24), transparent 55%),
+			rgba(0, 0, 0, 0.12),
+			var(--color-surface);
+		border-bottom: 2px solid var(--color-frame);
+		box-shadow: 0 8px 18px rgba(0, 0, 0, 0.28);
+		position: sticky;
+		top: 0;
+		z-index: 100;
+		transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+	}
+
+	.site-header__inner {
+		max-width: 960px;
+		margin: 0 auto;
+		padding: 1rem 1.5rem;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+	}
+
+	.site-logo {
+		font-family: var(--font-family-headings);
+		font-weight: 500;
+		font-size: 1.2rem;
+		color: var(--color-heading);
+		letter-spacing: 0.05em;
+		text-transform: uppercase;
+	}
+
+	.site-header__actions {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		width: 100%;
+	}
+
+	.site-header__nav {
+		order: 1;
+		flex: 1 1 auto;
+	}
+
+	.site-header__toggles {
+		display: flex;
+		align-items: center;
+		gap: 0.65rem;
+		order: 2;
+		margin-left: auto;
+	}
+
+	.nav-list {
+		margin: 0;
+		padding: 0;
+		display: flex;
+		gap: 0.75rem;
+		list-style: none;
+	}
+
+	.nav-toggle {
+		display: none;
+		padding: 0.35rem;
+		border: 1px solid var(--color-border);
+		background: var(--color-surface-strong);
+		border-radius: 8px;
+		cursor: pointer;
+		width: 2.6rem;
+		height: 2.6rem;
+		align-items: center;
+		justify-content: center;
+		transition: border-color 0.2s ease, background 0.2s ease;
+	}
+
+	.nav-toggle:hover,
+	.nav-toggle:focus-visible {
+		border-color: var(--color-link-active);
+	}
+
+	.nav-toggle__icon,
+	.nav-toggle__icon::before,
+	.nav-toggle__icon::after {
+		display: block;
+		width: 1.4rem;
+		height: 2px;
+		border-radius: 999px;
+		background: var(--color-text);
+		transition: transform 0.2s ease, opacity 0.2s ease;
+		content: '';
+	}
+
+	.nav-toggle__icon {
+		position: relative;
+	}
+
+	.nav-toggle__icon::before,
+	.nav-toggle__icon::after {
+		position: absolute;
+		left: 0;
+	}
+
+	.nav-toggle__icon::before {
+		top: -6px;
+	}
+
+	.nav-toggle__icon::after {
+		bottom: -6px;
+	}
+
+	.nav-toggle--open .nav-toggle__icon {
+		background: transparent;
+	}
+
+	.nav-toggle--open .nav-toggle__icon::before {
+		transform: translateY(6px) rotate(45deg);
+	}
+
+	.nav-toggle--open .nav-toggle__icon::after {
+		transform: translateY(-6px) rotate(-45deg);
+	}
+
+	.nav-link {
+		font-family: var(--font-family-headings);
+		font-weight: 500;
+		padding: 0.4rem 0.75rem;
+		border-radius: 999px;
+		transition: background 0.2s ease, color 0.2s ease;
+		color: var(--color-text);
+		border: 1px solid transparent;
+	}
+
+	.nav-link:hover,
+	.nav-link:focus-visible {
+		background: var(--color-nav-hover);
+		border-color: rgba(189, 147, 249, 0.4);
+	}
+
+	.nav-link.active {
+		background: linear-gradient(135deg, rgba(189, 147, 249, 0.28), transparent 70%), var(--color-nav-hover);
+		color: var(--color-link-active);
+		border: 1px solid rgba(189, 147, 249, 0.55);
+	}
+
+	.theme-toggle {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0.35rem;
+		border-radius: 999px;
+		border: 1px solid rgba(189, 147, 249, 0.35);
+		background: var(--color-surface-strong);
+		color: var(--color-text);
+		width: 2.4rem;
+		height: 2.4rem;
+		cursor: pointer;
+		transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+	}
+
+	.theme-toggle:hover,
+	.theme-toggle:focus-visible {
+		border-color: var(--color-frame);
+		color: var(--color-link-active);
+	}
+
+	.theme-toggle__icon {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 1.2rem;
+		height: 1.2rem;
+		font-size: 1rem;
+		line-height: 1;
+	}
+
+	.sr-only {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		border: 0;
+	}
+
+	.site-main {
+		flex: 1 0 auto;
+		max-width: 960px;
+		margin: 0 auto;
+		padding: 3rem 2rem 3.5rem;
+		display: flex;
+		flex-direction: column;
+		gap: 2.25rem;
+		transition: color 0.3s ease;
+		background:
+			linear-gradient(135deg, rgba(189, 147, 249, 0.18), transparent 55%),
+			linear-gradient(315deg, rgba(98, 114, 164, 0.12), transparent 45%),
+			var(--color-surface);
+		border: 1px solid var(--color-border);
+		border-radius: 22px;
+		box-shadow: 0 26px 50px rgba(0, 0, 0, 0.28);
+	}
+
+	.site-footer {
+		border-top: 2px solid var(--color-frame);
+		padding: 1.5rem;
+		text-align: center;
+		font-size: 0.9rem;
+		color: var(--color-muted);
+		background: linear-gradient(180deg, rgba(189, 147, 249, 0.18), transparent 70%), var(--color-surface);
+		box-shadow: inset 0 8px 16px rgba(0, 0, 0, 0.18);
+	}
+
+	@media (max-width: 720px) {
+		.site-header__inner {
+			flex-direction: column;
+			align-items: stretch;
+			gap: 0.75rem;
+		}
+
+		.site-header__actions {
+			width: 100%;
+			flex-direction: column;
+			align-items: stretch;
+			gap: 0.5rem;
+		}
+
+		.site-header__toggles {
+			order: 1;
+			width: 100%;
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 0.5rem;
+			margin-left: 0;
+		}
+
+		.site-header__nav {
+			order: 2;
+		}
+
+		.nav-toggle {
+			display: inline-flex;
+		}
+
+		.nav-list {
+			display: none;
+			flex-direction: column;
+			gap: 0.5rem;
+			padding: 0.75rem 0;
+		}
+
+		.nav-list[data-open='true'] {
+			display: flex;
+		}
+
+		.nav-link {
+			width: 100%;
+			padding: 0.6rem 0.75rem;
+		}
+
+		.theme-toggle {
+			align-self: auto;
+		}
+
+		.site-main {
+			padding: 1.75rem 1rem 2.25rem;
+		}
+	}
+</style>

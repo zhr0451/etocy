@@ -1,0 +1,181 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import type { CollectionEntry } from 'astro:content';
+import { getCollection } from 'astro:content';
+
+type PlayerEntry = CollectionEntry<'players'>;
+
+export async function getStaticPaths() {
+	const entries = await getCollection('players');
+	return entries.map((entry) => ({
+		params: { slug: entry.slug },
+		props: { entry }
+	}));
+}
+
+const { entry } = Astro.props as { entry: PlayerEntry };
+const { Content } = await entry.render();
+
+const pageTitle = `${entry.data.character} — ${entry.data.name} | «Последствия Чумы Заклинаний»`;
+const pageDescription =
+	entry.body?.slice(0, 140) ??
+	`Описание персонажа ${entry.data.character} (${entry.data.name}) из кампании «Последствия Чумы Заклинаний» клуба «К20».`;
+---
+
+<Layout title={pageTitle} description={pageDescription}>
+	<article class="player-entry">
+		<header class="player-entry__header">
+			<p class="player-entry__role">
+				{entry.data.role === 'dm' ? 'Ведущий кампании' : 'Игрок'}
+			</p>
+			<h1>{entry.data.character}</h1>
+			{entry.data.name.trim() !== '—' && <p class="player-entry__player">{entry.data.name}</p>}
+			<dl class="player-entry__meta">
+				<div>
+					<dt>Класс</dt>
+					<dd>{entry.data.class}</dd>
+				</div>
+				<div>
+					<dt>Уровень</dt>
+					<dd>{entry.data.level}</dd>
+				</div>
+				{entry.data.race.trim().toLowerCase() !== 'неизвестно' && (
+					<div>
+						<dt>Раса</dt>
+						<dd>{entry.data.race}</dd>
+					</div>
+				)}
+				{entry.data.background && (
+					<div>
+						<dt>Предыстория</dt>
+						<dd>{entry.data.background}</dd>
+					</div>
+				)}
+				{entry.data.alignment && (
+					<div>
+						<dt>Мировоззрение</dt>
+						<dd>{entry.data.alignment}</dd>
+					</div>
+				)}
+			</dl>
+			{entry.data.tags.length > 0 && (
+				<ul class="player-entry__tags">
+					{entry.data.tags.map((tag) => (
+						<li>{tag}</li>
+					))}
+				</ul>
+			)}
+		</header>
+
+		<section class="player-entry__content">
+			<Content />
+		</section>
+
+		<a class="player-entry__back" href="/players/">← Ко всем персонажам</a>
+	</article>
+</Layout>
+
+<style>
+	.player-entry {
+		display: grid;
+		gap: 2rem;
+	}
+
+	.player-entry__header {
+		display: grid;
+		gap: 1rem;
+		padding: 2.1rem;
+		border-radius: 22px;
+		background:
+			linear-gradient(135deg, rgba(189, 147, 249, 0.22), transparent 60%),
+			var(--color-surface-strong);
+		border: 1px solid var(--color-border-strong);
+		box-shadow: 0 24px 46px rgba(0, 0, 0, 0.32);
+		position: relative;
+	}
+
+	.player-entry__role {
+		margin: 0;
+		text-transform: uppercase;
+		font-size: 0.75rem;
+		letter-spacing: 0.1em;
+		color: var(--color-link-active);
+	}
+
+	.player-entry__player {
+		margin: 0;
+		color: var(--color-muted);
+		font-size: 1.05rem;
+	}
+
+	.player-entry__meta {
+		display: grid;
+		gap: 0.75rem;
+		grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+		margin: 0;
+	}
+
+	.player-entry__meta dt {
+		font-size: 0.75rem;
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+		color: var(--color-muted);
+	}
+
+	.player-entry__meta dd {
+		margin: 0;
+		font-weight: 500;
+	}
+
+	.player-entry__tags {
+		list-style: none;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.4rem;
+		margin: 0;
+		padding: 0;
+	}
+
+	.player-entry__tags li {
+		padding: 0.25rem 0.65rem;
+		border-radius: 999px;
+		background: var(--color-tag-bg);
+		color: var(--color-link-active);
+		font-size: 0.75rem;
+	}
+
+	.player-entry__content :global(p) {
+		margin-bottom: 1rem;
+		color: var(--color-muted);
+	}
+
+	.player-entry__content :global(h2),
+	.player-entry__content :global(h3) {
+		margin-top: 1.5rem;
+		color: var(--color-link-active);
+	}
+
+	.player-entry__content :global(ul),
+	.player-entry__content :global(ol) {
+		padding-left: 1.2rem;
+	}
+
+	.player-entry__back {
+		font-weight: 600;
+		color: var(--color-link-active);
+	}
+
+	@media (max-width: 640px) {
+		.player-entry__header {
+			padding: 1.5rem;
+		}
+
+		.player-entry__meta {
+			grid-template-columns: 1fr;
+		}
+
+		.player-entry__content :global(p) {
+			font-size: 0.95rem;
+		}
+	}
+</style>

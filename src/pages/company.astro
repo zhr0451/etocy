@@ -1,0 +1,114 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+
+const sections = await getCollection('company');
+const orderedSections = sections.sort((a, b) => a.data.order - b.data.order);
+const renderedSections = await Promise.all(
+	orderedSections.map(async (section) => {
+		const { Content } = await section.render();
+		return { section, Content };
+	})
+);
+---
+
+<Layout
+	title="Кампания «Последствия Чумы Заклинаний» — etocy.info"
+	description="Описание клуба «К20», целей и материалов кампании «Последствия Чумы Заклинаний» на сайте etocy.info."
+>
+	<header class="page-heading">
+		<h1>О компании</h1>
+		<p>
+			Этот раздел описывает кампанию, ключевые цели и ресурсы. Каждый блок — Markdown-файл в
+			<code>src/content/company</code>, поэтому добавлять и редактировать информацию можно без
+			верстки.
+		</p>
+	</header>
+
+	{renderedSections.length > 0 ? (
+		<ul class="company-sections">
+			{renderedSections.map(({ section, Content }) => (
+				<li class="company-sections__item">
+					<h2>{section.data.title}</h2>
+					<Content />
+					{section.data.tags.length > 0 && (
+						<ul class="company-sections__tags">
+							{section.data.tags.map((tag) => (
+								<li>{tag}</li>
+							))}
+						</ul>
+					)}
+				</li>
+			))}
+		</ul>
+	) : (
+		<p>Добавьте первый Markdown-файл в <code>src/content/company</code>, чтобы заполнить страницу.</p>
+	)}
+</Layout>
+
+<style>
+	.page-heading {
+		display: grid;
+		gap: 0.75rem;
+		margin-bottom: 1.5rem;
+	}
+
+	.company-sections {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+		display: grid;
+		gap: 1.5rem;
+	}
+
+	.company-sections__item {
+		padding: 1.85rem;
+		border-radius: 22px;
+		background:
+			linear-gradient(135deg, rgba(189, 147, 249, 0.18), transparent 60%),
+			var(--color-surface);
+		border: 1px solid var(--color-border);
+		box-shadow: 0 20px 38px rgba(0, 0, 0, 0.3);
+		position: relative;
+	}
+
+	.company-sections__item h2 {
+		margin-top: 0;
+	}
+
+	.company-sections__item :global(p) {
+		color: var(--color-muted);
+	}
+
+	.company-sections__item :global(ul),
+	.company-sections__item :global(ol) {
+		padding-left: 1.2rem;
+	}
+
+	.company-sections__tags {
+		margin: 1rem 0 0;
+		padding: 0;
+		list-style: none;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.4rem;
+	}
+
+	.company-sections__tags li {
+		padding: 0.25rem 0.65rem;
+		border-radius: 999px;
+		background: var(--color-tag-bg);
+		color: var(--color-link-active);
+		font-size: 0.75rem;
+	}
+
+	@media (max-width: 640px) {
+		.company-sections__item {
+			padding: 1.5rem;
+		}
+
+		.company-sections__tags {
+			gap: 0.3rem;
+		}
+	}
+</style>
