@@ -70,7 +70,10 @@ const mobileMenuId = 'primary-navigation';
 			<a class="skip-link" href="#main">Перейти к содержимому</a>
 			<header class="site-header">
 				<div class="site-header__inner">
-					<a class="site-logo" href="/">etocy.info</a>
+					<a class="site-logo" href="/">
+						<img class="site-logo__icon" src="/icon.png" alt="" decoding="async" />
+						<span>etocy.info</span>
+					</a>
 					<div class="site-header__actions">
 						<div class="site-header__toggles">
 							<button
@@ -210,7 +213,7 @@ const mobileMenuId = 'primary-navigation';
 		--color-heading-soft: rgba(255, 121, 198, 0.82);
 		--color-frame: #bd93f9;
 		--color-frame-dark: #6272a4;
-		--color-bg: linear-gradient(135deg, rgba(40, 42, 54, 0.95), rgba(68, 71, 90, 0.85) 60%), #282a36;
+		--color-bg: linear-gradient(160deg, rgba(31, 26, 46, 0.98) 0%, rgba(36, 30, 58, 0.96) 40%, rgba(45, 37, 82, 0.92) 100%);
 		--color-surface: rgba(33, 34, 45, 0.92);
 		--color-surface-strong: rgba(40, 42, 54, 0.96);
 		--color-border: rgba(189, 147, 249, 0.25);
@@ -223,7 +226,15 @@ const mobileMenuId = 'primary-navigation';
 		--color-button-bg: linear-gradient(135deg, #50fa7b 0%, #8be9fd 100%);
 		--color-button-text: #1e1f29;
 		--color-shadow: 0 24px 44px rgba(10, 10, 14, 0.55);
-		--bg-gradient: radial-gradient(circle at 18% 18%, rgba(189, 147, 249, 0.2), transparent 45%), radial-gradient(circle at 82% 22%, rgba(80, 250, 123, 0.15), transparent 55%), #282a36;
+		--page-gradient:
+			radial-gradient(65% 68% at 18% 22%, rgba(189, 147, 249, 0.28), transparent 62%),
+			radial-gradient(60% 64% at 82% 18%, rgba(255, 121, 198, 0.2), transparent 64%),
+			radial-gradient(70% 72% at 50% 88%, rgba(80, 250, 123, 0.18), transparent 70%),
+			linear-gradient(140deg, rgba(40, 42, 54, 0.98) 0%, rgba(68, 71, 90, 0.92) 48%, rgba(98, 114, 164, 0.88) 100%);
+		--bg-gradient:
+			radial-gradient(60% 62% at 18% 24%, rgba(189, 147, 249, 0.2), transparent 62%),
+			radial-gradient(58% 60% at 80% 18%, rgba(139, 233, 253, 0.16), transparent 64%),
+			linear-gradient(180deg, rgba(22, 19, 36, 0.96) 0%, rgba(29, 23, 45, 0.94) 48%, rgba(35, 27, 58, 0.92) 100%);
 		--color-tag-bg: rgba(189, 147, 249, 0.22);
 	}
 
@@ -233,7 +244,7 @@ const mobileMenuId = 'primary-navigation';
 		--color-heading-soft: rgba(189, 147, 249, 0.85);
 		--color-frame: #6272a4;
 		--color-frame-dark: #44475a;
-		--color-bg: linear-gradient(135deg, rgba(248, 248, 242, 0.95), rgba(230, 230, 235, 0.9) 60%), #f8f8f2;
+		--color-bg: linear-gradient(160deg, rgba(249, 246, 255, 0.98) 0%, rgba(238, 240, 250, 0.95) 45%, rgba(247, 233, 255, 0.92) 100%);
 		--color-surface: rgba(255, 255, 255, 0.94);
 		--color-surface-strong: rgba(244, 244, 250, 0.96);
 		--color-border: rgba(98, 114, 164, 0.22);
@@ -246,7 +257,15 @@ const mobileMenuId = 'primary-navigation';
 		--color-button-bg: linear-gradient(135deg, #6272a4 0%, #bd93f9 100%);
 		--color-button-text: #f8f8f2;
 		--color-shadow: 0 20px 40px rgba(98, 114, 164, 0.28);
-		--bg-gradient: radial-gradient(circle at 22% 20%, rgba(189, 147, 249, 0.12), transparent 45%), radial-gradient(circle at 80% 25%, rgba(98, 114, 164, 0.1), transparent 55%), #f8f8f2;
+		--page-gradient:
+			radial-gradient(60% 64% at 18% 24%, rgba(189, 147, 249, 0.24), transparent 60%),
+			radial-gradient(58% 62% at 82% 20%, rgba(255, 184, 108, 0.18), transparent 62%),
+			radial-gradient(70% 72% at 52% 88%, rgba(139, 233, 253, 0.18), transparent 70%),
+			linear-gradient(140deg, rgba(248, 248, 242, 0.98) 0%, rgba(237, 240, 248, 0.92) 50%, rgba(189, 147, 249, 0.18) 100%);
+		--bg-gradient:
+			radial-gradient(58% 62% at 20% 24%, rgba(189, 147, 249, 0.18), transparent 60%),
+			radial-gradient(55% 60% at 78% 18%, rgba(255, 184, 108, 0.14), transparent 60%),
+			linear-gradient(180deg, rgba(248, 248, 242, 0.96) 0%, rgba(236, 240, 252, 0.94) 50%, rgba(248, 234, 255, 0.92) 100%);
 		--color-tag-bg: rgba(98, 114, 164, 0.18);
 	}
 
@@ -257,7 +276,7 @@ const mobileMenuId = 'primary-navigation';
 	body {
 		margin: 0;
 		min-height: 100vh;
-		background: var(--bg-gradient), var(--color-bg);
+		background: var(--page-gradient), var(--bg-gradient), var(--color-bg);
 		color: var(--color-text);
 		font-family: var(--font-family-base);
 		line-height: 1.6;
@@ -319,6 +338,7 @@ const mobileMenuId = 'primary-navigation';
 		position: sticky;
 		top: 0;
 		z-index: 100;
+		--header-gap: 0.8rem;
 		transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 	}
 
@@ -332,19 +352,33 @@ const mobileMenuId = 'primary-navigation';
 		gap: 1rem;
 	}
 
-	.site-logo {
-		font-family: var(--font-family-headings);
-		font-weight: 500;
-		font-size: 1.2rem;
-		color: var(--color-heading);
-		letter-spacing: 0.05em;
-		text-transform: uppercase;
-	}
+		.site-logo {
+			display: inline-flex;
+			align-items: center;
+			gap: 0.5rem;
+			font-family: var(--font-family-headings);
+			font-weight: 500;
+			font-size: 1.2rem;
+			line-height: 1;
+			color: var(--color-heading);
+			letter-spacing: 0.05em;
+			text-transform: uppercase;
+		}
+
+		.site-logo__icon {
+			width: 1.2em;
+			height: 1.2em;
+			flex-shrink: 0;
+			object-fit: contain;
+			display: block;
+			border-radius: 8px;
+			box-shadow: 0 8px 14px rgba(0, 0, 0, 0.35);
+		}
 
 	.site-header__actions {
 		display: flex;
 		align-items: center;
-		gap: 1rem;
+		gap: var(--header-gap);
 		width: 100%;
 	}
 
@@ -356,7 +390,7 @@ const mobileMenuId = 'primary-navigation';
 	.site-header__toggles {
 		display: flex;
 		align-items: center;
-		gap: 0.65rem;
+		gap: var(--header-gap);
 		order: 2;
 		margin-left: auto;
 	}
@@ -365,7 +399,7 @@ const mobileMenuId = 'primary-navigation';
 		margin: 0;
 		padding: 0;
 		display: flex;
-		gap: 0.75rem;
+		gap: var(--header-gap);
 		list-style: none;
 	}
 
